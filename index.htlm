@@ -1,1 +1,76 @@
-index.htlm
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mi Moto Segura</title>
+<style>
+body{font-family:Arial,sans-serif;background:#101820;color:white;text-align:center;margin:0;padding:20px}
+h1{color:#49d17d}
+.card{background:#202d38;padding:18px;margin:15px 0;border-radius:15px}
+button{background:#49d17d;color:#102018;border:0;border-radius:10px;padding:14px;margin:6px;font-size:16px;font-weight:bold}
+#velocidad{font-size:48px;font-weight:bold}
+#estado{color:#ffd166}
+</style>
+</head>
+<body>
+<h1>🏍️ Mi Moto Segura</h1>
+<p>Tu compañero de viaje</p>
+
+<div class="card">
+<h2>📍 Mi ubicación GPS</h2>
+<p id="estado">Esperando permiso de ubicación...</p>
+<p id="coordenadas">Todavía sin ubicación</p>
+<button onclick="ubicar()">Activar GPS</button>
+<button onclick="mapa()">Abrir mi ubicación en Google Maps</button>
+</div>
+
+<div class="card">
+<h2>🏁 Velocímetro</h2>
+<div id="velocidad">-- km/h</div>
+<p>La velocidad requiere GPS y movimiento.</p>
+</div>
+
+<div class="card">
+<h2>🎵 Música para el viaje</h2>
+<button onclick="musica()">Elegir música</button>
+<p id="animo">¿Qué música te acompaña hoy?</p>
+</div>
+
+<script>
+let lat=null,lon=null;
+function ubicar(){
+ if(!navigator.geolocation){
+ document.getElementById('estado').textContent='Este navegador no admite geolocalización.';
+ return;
+ }
+ document.getElementById('estado').textContent='Buscando satélites GPS...';
+ navigator.geolocation.watchPosition(p=>{
+ lat=p.coords.latitude;lon=p.coords.longitude;
+ document.getElementById('estado').textContent='✅ Ubicación detectada';
+ document.getElementById('coordenadas').textContent=
+ 'Latitud: '+lat.toFixed(5)+' | Longitud: '+lon.toFixed(5);
+ document.getElementById('velocidad').textContent=
+ p.coords.speed==null?'-- km/h':Math.round(p.coords.speed*3.6)+' km/h';
+ },e=>{
+ document.getElementById('estado').textContent=
+ 'No se pudo obtener la ubicación. Revisa los permisos de Chrome y del teléfono.';
+ },{enableHighAccuracy:true,maximumAge:1000,timeout:20000});
+}
+function mapa(){
+ if(lat!==null){
+ window.open('https://www.google.com/maps?q='+lat+','+lon,'_blank');
+ }else{
+ window.open('https://www.google.com/maps','_blank');
+ document.getElementById('estado').textContent='Activa el GPS para compartir tu posición actual.';
+ }
+}
+function musica(){
+ const opciones=['🎸 Rock para la ruta','🎶 Música tranquila','🔥 Música para animarte','🎧 Tus canciones favoritas'];
+ document.getElementById('animo').textContent=opciones[Math.floor(Math.random()*opciones.length)];
+}
+</script>
+</body>
+</html>
